@@ -1,6 +1,88 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, CheckCircle2, Bot, Clock, CalendarDays, Users, MessageSquare, Share2, Layout, Sparkles, Globe, X, Database, Lock, UtensilsCrossed, Scissors, Activity, PawPrint, Stethoscope, Heart } from 'lucide-react';
+import { MessageCircle, CheckCircle2, Bot, Clock, CalendarDays, Users, MessageSquare, Share2, Layout, Sparkles, Globe, X, Database, Lock, UtensilsCrossed, Scissors, Activity, PawPrint, Stethoscope, Heart, ArrowLeft, Target } from 'lucide-react';
+
+/* ─── Scroll-Reveal Text Component ───────────────────────────────── */
+function ScrollRevealText({ children, className = '', tag: Tag = 'h2' }) {
+  const ref = useRef(null);
+  const wordsRef = useRef([]);
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const words = Array.from(el.querySelectorAll('.reveal-word'));
+    wordsRef.current = words;
+
+    // Light up words that are already visible on page load with a short delay
+    const lightUpWord = (wordEl, delay) => {
+      setTimeout(() => wordEl.classList.add('lit'), delay);
+    };
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = wordsRef.current.indexOf(entry.target);
+            lightUpWord(entry.target, idx * 60);
+            observerRef.current.unobserve(entry.target);
+          }
+        });
+      },
+      // No rootMargin penalty — fires as soon as word crosses viewport
+      { threshold: 0.1 }
+    );
+
+    words.forEach((w) => observerRef.current.observe(w));
+    return () => observerRef.current?.disconnect();
+  }, [children]);
+
+  // Space OUTSIDE the span so inline-block doesn't collapse it
+  const wrapped = String(children)
+    .split(' ')
+    .map((word, i) => (
+      <span key={i} className="reveal-word">{word}</span>
+    ))
+    .reduce((acc, el, i) => {
+      if (i === 0) return [el];
+      return [...acc, ' ', el]; // literal space node between spans
+    }, []);
+
+  return <Tag ref={ref} className={className}>{wrapped}</Tag>;
+}
+
+/* ─── Bento Spotlight Card ────────────────────────────────────────── */
+function BentoCard({ children, className = '', onClick }) {
+  const cardRef = useRef(null);
+  const spotRef = useRef(null);
+
+  const handleMouseMove = useCallback((e) => {
+    const card = cardRef.current;
+    const spot = spotRef.current;
+    if (!card || !spot) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    spot.style.background = `radial-gradient(300px circle at ${x}px ${y}px, rgba(255,255,255,0.07) 0%, transparent 70%)`;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (spotRef.current) spotRef.current.style.background = 'transparent';
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`bento-card cursor-pointer ${className}`}
+    >
+      <div ref={spotRef} className="bento-spotlight" />
+      {children}
+    </div>
+  );
+}
 
 const businessTypes = [
   { id: 'restaurante', label: 'Restaurante',      emoji: '🍽️', Icon: UtensilsCrossed },
@@ -19,69 +101,63 @@ const demoFlows = {
       { botMessage: "Perfecto. ¿A qué hora preferís venir?", options: ["20:00h", "21:00h", "21:30h"], benefitText: "El bot consulta la disponibilidad real en tiempo real. Cero overbooking. Cero errores humanos." },
       { botMessage: "¿Cuántas personas seréis?", options: ["2 personas", "4 personas", "6 personas", "Grupo +8"], benefitText: "Asigna automáticamente la mesa adecuada según el tamaño y tu configuración de sala." },
       { botMessage: "¿Tenéis alguna preferencia de ubicación?", options: ["Terraza ☀️", "Interior", "Sin preferencia"], benefitText: "El cliente siente atención personalizada. Sin hacer nada extra por tu parte." },
-      { botMessage: "¿Hay alguna alergia o celebración especial que debamos tener en cuenta?", options: ["Sin alergias", "Celíaco / Gluten", "Vegetariano / Vegano", "Cumpleaños 🎂"], benefitText: "El bot recopila información clave para que tu equipo esté preparado y el servicio sea impecable." },
-      { botMessage: "¡Todo listo! Tu reserva está confirmada ✔️\n\n📅 Mañana · 21:00h · 4 personas · Terraza\n\nRecibirás confirmación por WhatsApp en instantes.", options: [], benefitText: "Reserva cerrada en menos de 60 segundos. El local no ha hecho absolutamente nada." },
-      { botMessage: "Por cierto, ¿quieres recibir nuestra carta digital para ir abriendo boca? 😋", options: ["¡Sí, envíame la carta!", "No, gracias"], benefitText: "Upsell automático post-reserva. El bot puede enviar la carta, el menú del día o una oferta especial sin que tú lo gestiones." }
+      { botMessage: "¿Hay alguna alergia o petición especial que debamos tener en cuenta?", options: ["Sin alergias", "Celíaco / Gluten", "Vamos con 2 niños, carrito, y soy celíaco."], benefitText: "El bot recopila peticiones excepcionales complejas escritas en lenguaje natural." },
+      { botMessage: "¡Todo listo! Tu reserva está confirmada ✔️\n\nHe dejado nota a cocina de la alergia (tenemos carta sin gluten 🌾) y os he asignado una mesa amplia en esquina para que el carrito no moleste.\n\n📅 Mañana · 21:00h · 4 personas", options: [], benefitText: "¡Magia de la IA! Interpreta contexto humano complejo y da soluciones reales sin tu intervención." },
+      { botMessage: "Por cierto, ¿quieres recibir nuestra carta digital para ir abriendo boca? 😋", options: ["¡Sí, envíame la carta!", "No, gracias"], benefitText: "Upsell automático post-reserva. El bot puede enviar la carta o promociones en piloto automático." }
     ]
   },
   dental: {
     agentName: 'Bookia — Clínica Dental',
     steps: [
-      { botMessage: "¡Hola! Soy el asistente de la clínica. ¿Qué tipo de consulta necesitas? 🦷", options: ["Revisión anual", "Limpieza dental", "Urgencia / Dolor", "Estética dental"], benefitText: "El bot filtra y clasifica el tipo de consulta antes de agendar, optimizando la agenda del dentista." },
-      { botMessage: "¿Eres paciente nuevo o ya tienes historial en nuestra clínica?", options: ["Soy paciente nuevo", "Ya soy paciente"], benefitText: "Diferencia nuevos pacientes de existentes para preparar el expediente antes de la cita." },
-      { botMessage: "¿Tienes alguna molestia o síntoma en este momento?", options: ["Sin molestias", "Dolor o sensibilidad", "Encías inflamadas", "Diente roto / fracturado"], benefitText: "El bot hace de triaje clínico, priorizando urgencias y reduciendo la carga del equipo en recepción." },
-      { botMessage: "¿Qué día te viene mejor para la cita?", options: ["Esta semana", "La próxima semana", "Necesito cita urgente hoy"], benefitText: "Gestión de prioridades automática. Las urgencias se señalan para atención inmediata." },
-      { botMessage: "¿Prefieres turno de mañana o de tarde?", options: ["Mañana (9-14h)", "Tarde (15-20h)"], benefitText: "El bot completa la información necesaria para asignar el hueco correcto sin intervención humana." },
-      { botMessage: "¡Cita registrada! ✔️\n\nEl Dr. García te contactará para confirmar el horario exacto. Recibirás un recordatorio 24h antes por WhatsApp.", options: [], benefitText: "Confirmación instantánea y recordatorio automático. Reducción del 80% de las citas no asistidas." },
-      { botMessage: "¿Te gustaría recibir información sobre nuestros tratamientos de estética dental? ✨ (Blanqueamiento, carillas, ortodoncia invisible...)", options: ["Sí, me interesa", "No, por ahora no"], benefitText: "Generación automática de interés en servicios de mayor ticket. El bot trabaja como tu mejor comercial." }
+      { botMessage: "¡Hola! Soy el asistente de la clínica. ¿Qué tratamiento necesitas? 🦷", options: ["Revisión anual", "Limpieza", "Quiero un implante pero me da pánico..."], benefitText: "El paciente plantea objeciones o miedos típicos que frenarían una venta en una web normal." },
+      { botMessage: "Entiendo perfectamente ese temor. No te preocupes, en nuestra clínica utilizamos anestesia digital indolora y protocolos de sedación consciente. Prometido que no duele nada. 😊\n\n¿Quieres que el Dr. te valore sin compromiso?", options: ["Venga, me animo ✅", "Prefiero pensarlo"], benefitText: "El bot actúa como el mejor comercial: empatiza, usa tu valor diferencial (sedación) y derriba la objeción." },
+      { botMessage: "¡Genial! ¿Eres paciente nuevo o ya tienes historial en nuestra clínica?", options: ["Soy paciente nuevo", "Ya soy paciente"], benefitText: "Una vez convencido, diferencia nuevos pacientes de existentes para optimizar la ficha." },
+      { botMessage: "¿Qué día te viene mejor para la cita de valoración gratuita?", options: ["Esta semana", "La próxima semana", "Mañana mismo"], benefitText: "Agenda en tiempo récord sin ocupar a recepción en llamadas largas y llenas de miedo de los pacientes." },
+      { botMessage: "¿Prefieres turno de mañana o de tarde?", options: ["Mañana (9-14h)", "Tarde (15-20h)"], benefitText: "Gestión eficiente de huecos basada en la disponibilidad real del doctor." },
+      { botMessage: "¡Cita registrada! ✔️\n\nEl Dr. García te espera. Te acabo de enviar un PDF con testimonios de pacientes que también tenían miedo a los implantes para que vengas súper tranquilo/a.", options: [], benefitText: "Nutrición automática de leads. Se reduce drásticamente el % de cancelación por estrés médico." },
+      { botMessage: "¿Quieres un recordatorio por WhatsApp 24h antes? ✨", options: ["Sí, por favor", "No hace falta"], benefitText: "Garantiza la asistencia y aumenta tu retorno de inversión usando recordatorios automatizados." }
     ]
   },
   peluqueria: {
     agentName: 'Bookia — Peluquería',
     steps: [
-      { botMessage: "¡Hola! 💇 Bienvenido/a. ¿Qué servicio estás buscando hoy?", options: ["Corte de pelo", "Color / Mechas", "Tratamiento capilar", "Manicura / Pedicura"], benefitText: "El cliente elige su servicio de forma guiada. Sin esperas ni llamadas perdidas en el salón." },
-      { botMessage: "¡Genial! ¿Tienes preferencia por algún estilista?", options: ["Ana ⭐ (disponible)", "Marcos ⭐ (disponible)", "Sin preferencia"], benefitText: "Los clientes fidelizados siempre reservan con su estilista favorito. Fidelización automática." },
-      { botMessage: "¿Buscas un cambio de look o es un retoque de mantenimiento?", options: ["Cambio de look 🔥", "Retoque / mantenimiento", "Quiero asesoramiento"], benefitText: "El bot recaba contexto que el estilista necesita para preparar la sesión con antelación." },
-      { botMessage: "¿Qué día prefieres para tu cita?", options: ["Martes", "Miércoles", "Jueves", "Viernes"], benefitText: "El bot muestra solo días con disponibilidad real, evitando huecos imposibles." },
-      { botMessage: "¿A qué hora te va mejor?", options: ["10:00h", "12:00h", "17:00h", "19:00h"], benefitText: "Cada respuesta se sincroniza con la agenda del salón. Sin doble reserva. Nunca." },
-      { botMessage: "¡Reserva confirmada! 💇‍♀️✔️\n\nJueves · 17:00h · Color/Mechas con Ana\n\n¡Te esperamos con muchas ganas!", options: [], benefitText: "Confirmación profesional e instantánea. El cliente ya se siente atendido antes de llegar." },
-      { botMessage: "¿Quieres ver nuestros últimos trabajos en Instagram antes de venir? ✨", options: ["¡Sí, quiero ver! 🔗", "No, ya os conozco 😊"], benefitText: "Redirección automática a RRSS. Aumenta seguidores y genera expectativa antes de la visita." }
+      { botMessage: "¡Hola! 💇 Bienvenido/a. ¿Qué servicio estás buscando hoy?", options: ["Corte de pelo", "Balayage / Mechas", "Manicura / Pedicura"], benefitText: "El cliente elige su servicio de forma guiada sin odiosas horas de espera telefónica." },
+      { botMessage: "¡Perfecto! El servicio de Balayage/Mechas lleva unas 3 horas. ¿Tienes preferencia por alguna estilista?", options: ["Ana ⭐", "Marcos ⭐", "Sin preferencia"], benefitText: "El bot conoce la duración técnica y especializada de cada servicio para no solapar turnos." },
+      { botMessage: "¿Qué día prefieres reservar esas 3 horas bloqueadas para ti?", options: ["Miércoles", "Jueves", "Viernes"], benefitText: "Se muestran únicamente días que puedan absorber 3h seguidas en el calendario." },
+      { botMessage: "¿A qué hora te va mejor empezar?", options: ["10:00h", "16:00h"], benefitText: "La sincronización bidireccional con tu agenda es perfecta y al milisegundo." },
+      { botMessage: "Cita pre-guardada. 💇‍♀️\n\nComo las Mechas Balayage bloquean 3 horas completas de nuestra estilista Ana, requerimos una fianza de 20€ para confirmar tu plaza.\n\nTienes 30 minutos para completarlo aquí: [Pagar reserva en Stripe 💳]", options: [], benefitText: "¡K.O. AL NO-SHOW! Cobro automático de fianzas o señales integrado. Tu facturación, siempre blindada." },
+      { botMessage: "En cuanto completemos la fianza, descontable en el salón, te enviaré tu ticket cerrado. ✨", options: ["Pagar reserva ahora 💳", "Quiero preguntar una duda"], benefitText: "Evita que tu negocio pierda 150€ por clientes que no aparecen. Ellos pagan con Apple Pay o Tarjeta." }
     ]
   },
   estetica: {
     agentName: 'Bookia — Clínica Estética',
     steps: [
-      { botMessage: "¡Hola! ✨ Bienvenida/o a nuestra clínica. ¿Qué tratamiento te interesa?", options: ["Botox / Relleno", "Depilación láser", "HydraFacial", "Mesoterapia facial", "Consulta general"], benefitText: "Clasificación automática del tipo de tratamiento. El especialista ya sabe qué esperar antes de la consulta." },
-      { botMessage: "¿Es tu primera visita a nuestra clínica?", options: ["Sí, es mi primera vez", "Ya soy cliente/a"], benefitText: "Flujo diferenciado para nuevos y existentes. Los nuevos reciben más información, los habituales agendan más rápido." },
-      { botMessage: "¿Te gustaría empezar con una consulta gratuita sin compromiso para valorar tu caso? 💆", options: ["Sí, quiero consulta gratuita ✅", "No, ya sé lo que quiero"], benefitText: "Captación de leads de alto valor. La consulta gratuita es el gancho perfecto para convertir indecisos." },
-      { botMessage: "¿Para qué fecha te viene bien la cita?", options: ["Esta semana", "La próxima semana", "Dentro de 2 semanas"], benefitText: "Gestión de agenda a futuro sin intervención del equipo. La clínica llena su calendario sola." },
-      { botMessage: "¿Prefieres turno de mañana o tarde?", options: ["Mañana (9-14h)", "Tarde (15-19h)"], benefitText: "Optimización de la agenda por franjas horarias. Menos huecos vacíos, más productividad diaria." },
-      { botMessage: "¡Perfecta! 💆‍♀️✔️ Cita registrada.\n\nLa Dra. López te enviará la confirmación y las indicaciones previas al tratamiento en menos de 1 hora.", options: [], benefitText: "Protocolo de pre-tratamiento enviado automáticamente. El paciente llega preparado y la cita es más eficiente." },
-      { botMessage: "¿Quieres recibir nuestras promociones mensuales y novedades de tratamientos? 🌟", options: ["Sí, suscríbeme 💌", "No, gracias"], benefitText: "Base de datos de leads cualificados. Cada respuesta alimenta tu CRM de forma automática." }
+      { botMessage: "¡Hola! ✨ Bienvenida/o a nuestra clínica. ¿Qué zona o tratamiento te interesa hoy?", options: ["Botox / Relleno", "Depilación láser", "Limpieza facial"], benefitText: "Filtro inicial estético clarísimo sin robar energía a tus trabajadoras." },
+      { botMessage: "¿Es tu primera visita a nuestras instalaciones?", options: ["Sí, es mi primera vez", "Ya he ido antes"], benefitText: "Crea automáticamente la ficha clínica del lead con las etiquetas correctas en tu Base de Datos." },
+      { botMessage: "¿Para qué fecha te viene bien reservar la sesión de Depilación Láser?", options: ["Esta semana", "La próxima semana", "Dentro de 2 semanas"], benefitText: "Autogestión total. Las clientas reservan compulsivamente incluso a las 3 de la madrugada." },
+      { botMessage: "¿Prefieres que te encajemos de mañana o de tarde?", options: ["Mañana (9-14h)", "Tarde (15-19h)"], benefitText: "Se asigna el slot exacto cruzando la disponibilidad de sala láser + operaria responsable." },
+      { botMessage: "¡Perfecta! 💆‍♀️✔️ Cita de Láser registrada el jueves.\n\nPor cierto, este mes tenemos una promo del 50% en Diseño de Cejas si te haces láser. ¿Te lo añado a la misma cita y matamos dos pájaros de un tiro?", options: ["¡Sí, añádelo! 😍", "No, gracias, solo láser"], benefitText: "UPSELLING MÁGICO. La IA detecta lo que tu cliente compra y le dispara un extra complementario perfecto." },
+      { botMessage: "¡Añadido! Te he reservado 15 minutitos más.\n\nTe envío unas indicaciones rápidas para que no tomes el sol antes del láser. ¡Nos vemos el jueves!", options: [], benefitText: "Sube el ticket medio de tu clientela un +20% a final de mes sin que tus chicas intenten vender a presión." }
     ]
   },
   veterinaria: {
     agentName: 'Bookia — Veterinaria',
     steps: [
-      { botMessage: "¡Hola! 🐾 Bienvenido/a. ¿En qué podemos ayudarte hoy?", options: ["Revisión general", "Vacunación / Desparasitación", "Urgencia veterinaria 🚨", "Peluquería canina"], benefitText: "Triaje automático para separar urgencias de consultas ordinarias. El veterinario gestiona mejor su tiempo." },
-      { botMessage: "¿Qué tipo de mascota tienes?", options: ["Perro 🐕", "Gato 🐱", "Conejo / Roedor 🐰", "Ave / Reptil / Otro"], benefitText: "Información de especie capturada automáticamente. El veterinario ya sabe qué médico o protocolo aplicar." },
-      { botMessage: "¿Tu mascota ya es paciente de nuestra clínica?", options: ["Sí, tiene historial aquí", "No, es la primera vez"], benefitText: "Diferenciación de nuevos pacientes para agilizar el proceso de alta y preparar el historial clínico." },
-      { botMessage: "¿Con qué urgencia necesitas la cita?", options: ["Hoy si es posible ⚡", "Cualquier día esta semana", "La próxima semana"], benefitText: "Gestión de prioridades sin que recepción tenga que mediar. Las urgencias se marcan automáticamente." },
-      { botMessage: "¿Prefieres cita de mañana o de tarde?", options: ["Mañana (9-13h)", "Tarde (16-20h)"], benefitText: "Distribución equilibrada del flujo de pacientes a lo largo del día." },
-      { botMessage: "¡Cita reservada! 🐾✔️\n\nEl Dr. Ramos atenderá a tu mascota. Recibirás confirmación y las indicaciones previas a la visita por WhatsApp.", options: [], benefitText: "El dueño ya sabe qué llevar a la cita. Menos tiempo perdido en consulta, más satisfacción del cliente." },
-      { botMessage: "¿Quieres recibir recordatorios automáticos de vacunas y desparasitaciones? Así nunca se os olvidará. 💉", options: ["Sí, me apunto ✅", "No, yo me acuerdo"], benefitText: "Marketing preventivo totalmente automatizado. Récord de retención de clientes y visitas recurrentes." }
+      { botMessage: "¡Hola! 🐾 Bienvenido/a a la Clínica. ¿En qué podemos ayudar a tu mascota? / How can we help your pet today?", options: ["Revisión general y vacuna", "My dog swallowed a sock! 🚨"], benefitText: "Soporte nativo Bilingüe Inmediato. Un filón y mina de oro si estás en zonas ex-pat o turísticas." },
+      { botMessage: "That is a medical emergency! 🚨 We assist in English. Our surgeon is preparing the ER room right now.\n\nHas your dog been to our clinic before?", options: ["Yes, he has history here", "No, we are tourists!"], benefitText: "El cerebro IA salta protocolos triviales: Detecta el idioma y comprende la 'Urgencia Médica Vital'." },
+      { botMessage: "Okay, we are opening a FAST-TRACK profile. How soon can you arrive at the clinic?", options: ["In 10 minutes ⚡", "I'm parking right now!"], benefitText: "Gestión de triajes críticos. Mientras el turista chatea conduciendo, la IA avisa por pantalla a tu cirujano." },
+      { botMessage: "Understood. The team is waiting at the front door. Please just give me the name of your dog.", options: ["His name is Max 🐕"], benefitText: "El asistente saca solo el último dato necesario para agilizar internamente el ingreso a quirófano." },
+      { botMessage: "Max will be in very good hands. ✔️\n\nHere is our exact GPS location map pin so you don't get lost. Drive safely.", options: [], benefitText: "Atención excelente, puramente empática y sin barreras de idioma, facturando tickets altos por urgencias." }
     ]
   },
   fisioterapia: {
     agentName: 'Bookia — Fisioterapia',
     steps: [
-      { botMessage: "¡Hola! 💪 Soy el asistente de la clínica. ¿Qué tipo de molestia tienes?", options: ["Dolor de espalda / Cuello", "Lesión deportiva", "Recuperación post-operatoria", "Fisio preventiva"], benefitText: "Clasificación clínica previa. El fisioterapeuta llega a la cita ya con contexto del caso del paciente." },
-      { botMessage: "¿Cuánto tiempo llevas con esta molestia?", options: ["Reciente (menos de 1 semana)", "Varias semanas", "Crónico (más de 3 meses)"], benefitText: "El nivel de cronicidad determina el tipo y duración del tratamiento. El bot lo captura sin intervención." },
-      { botMessage: "¿Has recibido algún tratamiento previo para esta lesión?", options: ["Sí, ya he ido al fisio antes", "No, es la primera vez", "He tomado medicación"], benefitText: "Historial rápido del paciente. Permite al profesional ajustar el enfoque desde el primer minuto." },
-      { botMessage: "¿Qué día te viene mejor para la primera sesión?", options: ["Lunes", "Miércoles", "Viernes", "Sábado"], benefitText: "Gestión de agenda sin llamadas. El paciente elige en su tiempo libre, no en horario de clínica." },
-      { botMessage: "¿A qué hora prefieres la sesión?", options: ["9:00h", "11:00h", "16:00h", "18:00h"], benefitText: "Huecos de sesión asignados automáticamente respetando la duración de cada tratamiento." },
-      { botMessage: "¡Cita confirmada! 💪✔️\n\nEl fisioterapeuta Miguel te atenderá con valoración inicial incluida. Recibirás un recordatorio el día anterior por WhatsApp.", options: [], benefitText: "El recordatorio automático reduce el no-show (pacientes que no aparecen) hasta en un 70%." },
-      { botMessage: "¿Quieres que te enviemos ejercicios de calentamiento recomendados para hacer antes de tu sesión? 🏃", options: ["Sí, envíame los ejercicios ✅", "No, ya lo sé manejar"], benefitText: "Value-add automático pre-sesión. El paciente llega activado, la sesión es más efectiva, el cliente más feliz." }
+      { botMessage: "¡Hola! 💪 Soy el asistente inteligente de la clínica. ¿Deseas pedir cita nueva o gestionar una tuya?", options: ["Pedir cita nueva", "Tengo que cancelar mi cita de hoy ❌"], benefitText: "El mayor pozo de dinero para una clínica son los huecos vacíos de última hora no monetizados." },
+      { botMessage: "Vaya, qué pena. Acabo de cancelar tu cita (tranquilo/a, ya la IA ha avisado a nuestra lista de espera para cubrir el hueco de hoy).\n\n¿Para qué día quieres reagendar tú?", options: ["Para este viernes", "La próxima semana"], benefitText: "Mientras das de baja el turno del perezoso, la IA lanza SMS con el hueco liberado para salvar tus ingresos." },
+      { botMessage: "Para el viernes Fer está al 100% de ocupación, pero el sábado a las 10:00h me acaba de quedar un hueco libre por otra cancelación parecida.\n\n¿Te bloqueo esa hora?", options: ["Sí, guárdamelo ✅", "No, prefiero esperar al lunes"], benefitText: "Tetris avanzado: el Bot organiza cancelaciones para cuadrar agendas eficientemente de manera cruzada." },
+      { botMessage: "¡Cita reagendada al sábado a las 10:00! 💪✔️\n\nHas evitado perder la sesión y nosotros mantenemos organizada la agenda.", options: [], benefitText: "Recuperación matemática de pacientes retenidos evitando caídas de facturación." },
+      { botMessage: "¿Quieres que te envíe ahora un pequeño PDF de estiramientos lumbares suaves para que no te moleste la hernia de aquí al sábado?", options: ["¡Me vendría súper genial! ✨", "No, aguanto bien"], benefitText: "Atención hiper-personalizada. Regalas valor con automatización cerrando la experiencia rozando el 10/10." }
     ]
   }
 };
@@ -156,6 +232,29 @@ export default function App() {
       }
     }
   }, [currentStep, selectedBusiness, isFlowComplete]);
+
+  const handleGoBack = () => {
+    if (currentStep > 0) {
+      const prevStep = currentStep - 1;
+      const flow = demoFlows[selectedBusiness];
+      
+      let targetStep = prevStep;
+      let popCount = 0;
+      
+      // Si el paso anterior era de auto-avance (sin opciones), retrocedemos 2 de golpe
+      // para no volver a caer en él y que se autodisparase hacia adelante automáticamente.
+      if (flow.steps[prevStep].options.length === 0 && targetStep > 0) {
+        targetStep = prevStep - 1; 
+        popCount = 3; 
+      } else {
+        popCount = 2;
+      }
+
+      setCurrentStep(targetStep);
+      setChatHistory(prev => prev.slice(0, prev.length - popCount));
+      setIsFlowComplete(false);
+    }
+  };
 
   const handleOptionClick = (optionText) => {
     const flow = demoFlows[selectedBusiness];
@@ -297,61 +396,68 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col items-center justify-start relative z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col items-center justify-start relative z-10">
 
         {/* Hero Section */}
-        <div className="text-center max-w-4xl mb-12 md:mb-16 relative z-20">
+        <div className="text-center w-full max-w-3xl mb-10 md:mb-16 relative z-20 px-2">
 
           {/* Trust Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-zinc-900/80 border border-zinc-700/60 rounded-full px-4 py-2 mb-8"
+            className="inline-flex items-center justify-center gap-2.5 bg-zinc-900/80 border border-zinc-700/60 rounded-full px-4 py-2 mb-6 mx-auto"
           >
-            <span className="flex -space-x-1.5">
+            <span className="flex items-center gap-1">
               {['#e879f9','#38bdf8','#fb923c'].map((c, i) => (
-                <span key={i} className="w-6 h-6 rounded-full border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold" style={{backgroundColor: c}}>✓</span>
+                <span
+                  key={i}
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
+                  style={{ backgroundColor: c }}
+                >
+                  ✓
+                </span>
               ))}
             </span>
-            <span className="text-zinc-300 text-sm font-medium">+47 restaurantes ya lo usan este mes</span>
+            <span className="text-zinc-400 text-[11px] sm:text-xs font-semibold tracking-wide whitespace-nowrap">
+              +47 negocios activos
+            </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl sm:text-5xl md:text-[64px] font-extrabold tracking-tight text-white mb-5 leading-[1.1]"
+          {/* H1 con reveal palabra a palabra */}
+          <ScrollRevealText
+            tag="h1"
+            className="text-[2.2rem] sm:text-5xl md:text-[60px] font-extrabold tracking-tight mb-4 leading-[1.1]"
           >
-            Deja de perder reservas<br className="hidden sm:block" />
-            <span className="text-zinc-500"> mientras duermes.</span>
-          </motion.h1>
+            Deja de perder reservas mientras duermes.
+          </ScrollRevealText>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg md:text-xl text-zinc-400 font-medium mb-10 max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-base sm:text-lg md:text-xl text-zinc-400 font-medium mb-8 max-w-xl mx-auto leading-relaxed px-1"
           >
-            Instalamos un <strong className="text-zinc-200">recepcionista con IA</strong> en tu restaurante en 48h.
-            Atiende y confirma reservas por WhatsApp, Instagram o tu web —<strong className="text-zinc-200">sin que tú hagas nada.</strong>
+            Instalamos un <strong className="text-zinc-200">recepcionista con IA</strong> en tu negocio en 48h.
+            Atiende reservas por WhatsApp, Instagram o tu web —<strong className="text-zinc-200">sin que tú hagas nada.</strong>
           </motion.p>
 
+          {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row justify-center gap-4 mb-10"
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex flex-col sm:flex-row justify-center gap-3 mb-8"
           >
-            <button 
-              onClick={() => openModal('Pack Full + Rediseño')}
-              className="relative bg-white text-black font-bold px-10 py-4 rounded-full hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] cursor-pointer text-[17px]"
+            <button
+              onClick={() => openModal('Plan Ultra')}
+              className="w-full sm:w-auto bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] cursor-pointer text-base sm:text-[17px]"
             >
-              Quiero verlo en mi restaurante →
+              Quiero verlo en mi negocio →
             </button>
-            <button 
+            <button
               onClick={() => document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-transparent border border-zinc-700 text-zinc-300 font-semibold px-8 py-4 rounded-full hover:border-zinc-500 hover:text-white transition-all active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto bg-transparent border border-zinc-700 text-zinc-300 font-semibold px-7 py-4 rounded-full hover:border-zinc-500 hover:text-white transition-all active:scale-95 cursor-pointer text-base"
             >
               Ver demo en vivo ↓
             </button>
@@ -362,27 +468,27 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-x-8 gap-y-3"
+            className="flex flex-wrap justify-center gap-x-6 gap-y-2"
           >
             {[
               { value: '3.2x', label: 'más reservas en 30 días' },
-              { value: '0€', label: 'coste por reserva gestionada' },
+              { value: '0€', label: 'coste extra por reserva' },
               { value: '48h', label: 'para estar operativo' },
             ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-2">
-                <span className="text-white font-extrabold text-lg">{stat.value}</span>
-                <span className="text-zinc-500 text-sm">{stat.label}</span>
+              <div key={stat.label} className="flex items-center gap-1.5">
+                <span className="text-white font-extrabold text-base sm:text-lg">{stat.value}</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">{stat.label}</span>
               </div>
             ))}
           </motion.div>
         </div>
 
         {/* Business Type Selector */}
-        <div className="w-full max-w-5xl mb-12">
-          <p className="text-zinc-500 text-xs font-semibold uppercase tracking-widest text-center mb-5">
-            🎯 Elige el tipo de negocio para ver la demo personalizada
+        <div className="w-full max-w-5xl mb-8 sm:mb-12">
+          <p className="flex justify-center items-center gap-2 text-zinc-500 text-xs font-semibold uppercase tracking-widest text-center mb-4">
+            <Target className="w-3.5 h-3.5" /> Elige el tipo de negocio
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
             {businessTypes.map((biz) => {
               const isActive = selectedBusiness === biz.id;
               const BizIcon = biz.Icon;
@@ -396,7 +502,7 @@ export default function App() {
                       : 'bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600'
                   }`}
                 >
-                  <span>{biz.emoji}</span>
+                  <BizIcon className="w-4 h-4" />
                   <span>{biz.label}</span>
                 </button>
               );
@@ -427,7 +533,16 @@ export default function App() {
               <div className="w-full h-full bg-zinc-900 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden flex flex-col relative chat-scroll">
 
                 {/* Chat Header */}
-                <div className="bg-black/90 backdrop-blur-md px-4 py-5 pt-10 border-b border-zinc-800 flex flex-col items-center">
+                <div className="bg-black/90 backdrop-blur-md px-4 py-5 pt-10 border-b border-zinc-800 flex flex-col items-center relative">
+                  {currentStep > 0 && (
+                    <button 
+                      onClick={handleGoBack}
+                      className="absolute left-5 top-11 text-zinc-400 hover:text-white transition-colors flex items-center justify-center p-1 cursor-pointer active:scale-95"
+                      title="Paso anterior"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                  )}
                   <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center mb-2 shadow-sm">
                     <Bot className="w-6 h-6 text-white" />
                   </div>
@@ -582,7 +697,7 @@ export default function App() {
               {isFlowComplete && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                   <button
-                    onClick={() => openModal('Pack Full + Rediseño')}
+                    onClick={() => openModal('Plan Ultra')}
                     className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 cursor-pointer text-[15px] mb-3"
                   >
                     Quiero esto para mi negocio →
@@ -658,91 +773,99 @@ export default function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1 */}
-            <div 
-              onClick={() => openModal('Solo WhatsApp')}
-              className="group cursor-pointer p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 hover:border-zinc-500/50 hover:bg-zinc-900/60 transition-all duration-300 flex flex-col"
+
+            {/* Card 1 — Plan Standard */}
+            <BentoCard
+              onClick={() => openModal('Plan Standard')}
+              className="p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 flex flex-col group"
             >
-              <MessageSquare className="w-7 h-7 text-zinc-300 mb-5 group-hover:text-white transition-colors" />
-              <h3 className="text-lg font-bold mb-2 text-white">Chatbot WhatsApp</h3>
+              <MessageSquare className="w-7 h-7 text-zinc-400 mb-5 group-hover:text-white transition-colors duration-300" />
+              <h3 className="text-lg font-bold mb-2 text-white">Plan Standard</h3>
               <div className="mb-4">
-                <span className="text-3xl font-black text-white">57€</span><span className="text-zinc-500 text-base font-medium">/mes</span>
-                <p className="text-xs text-zinc-500 mt-1">+247€ setup único</p>
+                <span className="text-3xl font-black text-white">79€</span>
+                <span className="text-zinc-500 text-base font-medium">/mes</span>
+                <p className="text-xs text-zinc-500 mt-1">+299€ setup único</p>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">Tus clientes reservan sin salir de WhatsApp. <strong className="text-zinc-300">El canal con mayor ratio de apertura del mundo (98%).</strong></p>
-              <span className="text-xs font-semibold text-zinc-400 group-hover:text-white transition-colors mt-auto">Añadir WhatsApp →</span>
-            </div>
-            {/* Card 2 */}
-            <div 
-              onClick={() => openModal('Solo Instagram')}
-              className="group cursor-pointer p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 hover:border-zinc-500/50 hover:bg-zinc-900/60 transition-all duration-300 flex flex-col"
+              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">
+                Ideal para empezar a automatizar.
+                <br /><br />
+                • <strong className="text-zinc-300">1 Canal a elegir</strong> (WhatsApp, IG o Web)<br />
+                • Respuestas 24/7 instantáneas<br />
+                • IA entrenada con tu menú e info<br />
+                • Hasta 300 interacciones/mes
+              </p>
+              <span className="text-xs font-semibold text-zinc-500 group-hover:text-white transition-colors mt-auto">Seleccionar Standard →</span>
+            </BentoCard>
+
+            {/* Card 2 — Plan Pro */}
+            <BentoCard
+              onClick={() => openModal('Plan Pro')}
+              className="p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 flex flex-col group relative overflow-hidden"
             >
-              <Share2 className="w-7 h-7 text-zinc-300 mb-5 group-hover:text-white transition-colors" />
-              <h3 className="text-lg font-bold mb-2 text-white">Chatbot Instagram</h3>
+              {/* Badge */}
+              <div className="absolute top-0 right-0 bg-zinc-800 text-zinc-300 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
+                Más Popular
+              </div>
+              <Share2 className="w-7 h-7 text-zinc-400 mb-5 group-hover:text-white transition-colors duration-300" />
+              <h3 className="text-lg font-bold mb-2 text-white">Plan Pro</h3>
               <div className="mb-4">
-                <span className="text-3xl font-black text-white">57€</span><span className="text-zinc-500 text-base font-medium">/mes</span>
-                <p className="text-xs text-zinc-500 mt-1">+177€ setup único</p>
+                <span className="text-3xl font-black text-white">149€</span>
+                <span className="text-zinc-500 text-base font-medium">/mes</span>
+                <p className="text-xs text-zinc-500 mt-1">+499€ setup único</p>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">Convierte cada DM y cada comentario en una reserva confirmada. <strong className="text-zinc-300">Ideal para locales con fuerte presencia social.</strong></p>
-              <span className="text-xs font-semibold text-zinc-400 group-hover:text-white transition-colors mt-auto">Añadir Instagram →</span>
-            </div>
-            {/* Card 3 */}
-            <div 
-              onClick={() => openModal('Solo Chatbot Web')}
-              className="group cursor-pointer p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 hover:border-zinc-500/50 hover:bg-zinc-900/60 transition-all duration-300 flex flex-col"
+              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">
+                Escala tus reservas al máximo nivel.
+                <br /><br />
+                • <strong className="text-zinc-300">2 Canales combinados</strong><br />
+                • Integración con Calendar y CRM<br />
+                • Pagos embebidos (señal/fianza)<br />
+                • Interacciones ilimitadas
+              </p>
+              <span className="text-xs font-semibold text-zinc-500 group-hover:text-white transition-colors mt-auto">Seleccionar Pro →</span>
+            </BentoCard>
+
+            {/* Card 3 — Plan Ultra */}
+            <div
+              onClick={() => openModal('Plan Ultra')}
+              className="pack-full-card md:col-span-2 lg:col-span-1 cursor-pointer group"
             >
-              <Layout className="w-7 h-7 text-zinc-300 mb-5 group-hover:text-white transition-colors" />
-              <h3 className="text-lg font-bold mb-2 text-white">Asistente Web</h3>
-              <div className="mb-4">
-                <span className="text-3xl font-black text-white">67€</span><span className="text-zinc-500 text-base font-medium">/mes</span>
-                <p className="text-xs text-zinc-500 mt-1">+247€ setup único</p>
-              </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">Un recepcionista 24/7 integrado en tu web. <strong className="text-zinc-300">Tu local sigue llenando mesas incluso cuando estás cerrado.</strong></p>
-              <span className="text-xs font-semibold text-zinc-400 group-hover:text-white transition-colors mt-auto">Añadir Asistente Web →</span>
-            </div>
-            {/* Card 4 - Web a Medida */}
-            <div 
-              onClick={() => openModal('Web a Medida')}
-              className="group cursor-pointer p-8 rounded-3xl bg-zinc-900/30 border border-zinc-700/60 hover:border-zinc-400/60 hover:bg-zinc-900/60 transition-all duration-300 relative overflow-hidden flex flex-col"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/10 to-transparent pointer-events-none" />
-              <Globe className="w-7 h-7 text-zinc-300 mb-5 group-hover:text-white transition-colors" />
-              <h3 className="text-lg font-bold mb-2 text-white">Web a Medida</h3>
-              <div className="mb-4">
-                <span className="text-2xl font-bold text-white">A medida</span>
-                <p className="text-xs text-zinc-500 mt-1">Presupuesto personalizado</p>
-              </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">Diseño y desarrollo web profesional con reservas integradas. <strong className="text-zinc-300">Tu primer empleado digital, siempre disponible.</strong></p>
-              <span className="text-xs font-semibold text-zinc-400 group-hover:text-white transition-colors mt-auto">Solicitar presupuesto →</span>
-            </div>
-            {/* Card 5 - Highlighted Full Pack */}
-            <div 
-              onClick={() => openModal('Pack Full + Rediseño')}
-              className="group cursor-pointer relative p-8 rounded-3xl bg-zinc-900 border border-zinc-600 hover:border-white transition-all duration-300 transform hover:-translate-y-1 shadow-2xl md:col-span-2 lg:col-span-2 flex flex-col justify-between"
-            >
-              <div className="absolute -top-3 left-8 px-4 py-1 bg-white text-black text-xs font-bold rounded-full uppercase tracking-widest shadow-lg">
-                Más elegido · Mejor valor
-              </div>
-              
-              <div>
-                <Sparkles className="w-7 h-7 text-white mb-5" />
-                <h3 className="text-xl font-bold mb-2 text-white">Pack Full — Todos los Canales</h3>
-                <div className="mb-6 flex items-baseline gap-3">
-                  <span className="text-4xl font-black text-white">117€</span><span className="text-zinc-400 font-medium tracking-wide">/mes</span>
-                  <span className="bg-zinc-800 text-zinc-300 text-xs font-bold px-3 py-1 rounded-full">+497€ setup único</span>
-                </div>
-                
-                <p className="text-zinc-400 text-[15px] leading-relaxed mb-8">
-                  WhatsApp + Instagram + Web + Rediseño premium de tu página. <strong className="text-white">La solución completa que multiplica por 3 las reservas.</strong> Ahorras más de 170€ respecto a contratarlo por separado.
-                </p>
+              {/* Fondo interior que cubre el borde animado */}
+              <div className="pack-full-inner" />
+
+              {/* Badge flotante */}
+              <div className="absolute -top-3 left-8 z-10 px-4 py-1 bg-white text-black text-xs font-bold rounded-full uppercase tracking-widest shadow-lg">
+                Experiencia Total
               </div>
 
-              <div className="flex items-center">
-                <span className="inline-flex items-center gap-2 bg-white text-black text-[15px] font-bold px-8 py-3.5 rounded-full group-hover:bg-zinc-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                  Quiero el Pack Completo →
-                </span>
+              {/* Contenido */}
+              <div className="relative z-10 p-8 flex flex-col justify-between h-full">
+                <div>
+                  <Sparkles className="w-7 h-7 text-white mb-5" />
+                  <h3 className="text-xl font-bold mb-2 text-white">Plan Ultra</h3>
+                  <div className="mb-6 flex flex-col items-baseline gap-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-black text-white">249€</span>
+                      <span className="text-zinc-400 font-medium tracking-wide">/mes</span>
+                    </div>
+                    <span className="bg-zinc-800 text-zinc-300 text-xs font-bold px-3 py-1 rounded-full mt-2">+799€ setup único</span>
+                  </div>
+                  <p className="text-zinc-400 text-[14px] leading-relaxed mb-8 flex-1">
+                    Tu sistema omnicanal revolucionario.
+                    <br /><br />
+                    • <strong className="text-white">Todos los Canales</strong> (WA + IG + Web)<br />
+                    • Rediseño web premium<br />
+                    • Soporte prioritario 1-to-1<br />
+                    • Reportes de conversión IA
+                  </p>
+                </div>
+                <div>
+                  <span className="inline-flex w-full justify-center items-center gap-2 bg-white text-black text-[14px] font-bold px-4 py-3 rounded-xl group-hover:bg-zinc-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.25)] relative overflow-hidden">
+                    Quiero el Plan Ultra →
+                  </span>
+                </div>
               </div>
             </div>
+
           </div>
 
           {/* Final bottom CTA strip */}
@@ -903,12 +1026,16 @@ export default function App() {
 
               {!isSubmitted ? (
                 <>
-                  <h3 className="text-2xl font-bold text-white mb-2">Solicita información</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {selectedService !== 'Consulta sin compromiso' && selectedService 
+                      ? `Solicitas el ${selectedService}` 
+                      : 'Solicita información'}
+                  </h3>
                   <p className="text-zinc-400 mb-6 text-sm">Déjanos tu email y te enviaremos todos los detalles sin compromiso.</p>
 
                   <form onSubmit={handleFormSubmit} className="space-y-5">
                     <div>
-                      <label htmlFor="service" className="block text-sm font-medium text-zinc-300 mb-1.5">Servicio de interés</label>
+                      <label htmlFor="service" className="block text-sm font-medium text-zinc-300 mb-1.5">Plan de interés</label>
                       <div className="relative">
                         <select 
                           id="service" 
@@ -917,11 +1044,10 @@ export default function App() {
                           className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all cursor-pointer appearance-none"
                           style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
-                          <option value="Solo WhatsApp">Solo WhatsApp</option>
-                          <option value="Solo Instagram">Solo Instagram</option>
-                          <option value="Solo Chatbot Web">Solo Chatbot Web</option>
-                          <option value="Web a Medida">Web a Medida</option>
-                          <option value="Pack Full + Rediseño">Pack Full + Rediseño</option>
+                          <option value="Plan Standard">Plan Standard (79€/mes)</option>
+                          <option value="Plan Pro">Plan Pro (149€/mes)</option>
+                          <option value="Plan Ultra">Plan Ultra (249€/mes)</option>
+                          <option value="Consulta sin compromiso">Consulta sin compromiso</option>
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
