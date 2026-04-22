@@ -6,8 +6,8 @@
 
 @layer base {
   body {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #f8f9fa;
+    color: #202124;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -37,6 +37,93 @@
   background: transparent;
 }
 .chat-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+}
+
+/* ─── Scroll-Reveal Text ───────────────────────────────────────── */
+.reveal-word {
+  display: inline-block;
+  color: #9aa0a6; /* google gray lighter */
+  transition: color 0.55s ease;
+  white-space: normal; 
+}
+.reveal-word.lit {
+  color: #1a73e8; /* google blue */
+}
+
+/* ─── Bento Spotlight Card ────────────────────────────────────── */
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.bento-spotlight {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.bento-card:hover .bento-spotlight {
+  opacity: 1;
+}
+
+/* ─── Pack Full — Animated Gradient Border ──────────────────────── */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-border {
+  to { --angle: 360deg; }
+}
+
+.pack-full-card {
+  position: relative;
+  border-radius: 1.5rem; /* 24px = rounded-3xl */
+}
+.pack-full-card::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 70%,
+    rgba(26, 115, 232, 0.3) 80%,
+    rgba(26, 115, 232, 0.8) 85%,
+    rgba(26, 115, 232, 0.3) 90%,
+    transparent 100%
+  );
+  animation: spin-border 4s linear infinite;
+  z-index: 0;
+}
+.pack-full-card > * {
+  position: relative;
+  z-index: 1;
+}
+.pack-full-inner {
+  position: absolute;
+  inset: 1.5px;
+  border-radius: calc(1.5rem - 1.5px);
+  background: #ffffff;
+  z-index: 0;
+}
+
+/* ─── Section Fade Up (Framer-less fallback) ────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
 }

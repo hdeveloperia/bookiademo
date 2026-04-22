@@ -63,7 +63,7 @@ function BentoCard({ children, className = '', onClick }) {
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    spot.style.background = `radial-gradient(300px circle at ${x}px ${y}px, rgba(255,255,255,0.07) 0%, transparent 70%)`;
+    spot.style.background = `radial-gradient(300px circle at ${x}px ${y}px, rgba(0,0,0,0.03) 0%, transparent 70%)`;
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -369,27 +369,27 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] relative overflow-hidden flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] relative overflow-hidden flex flex-col font-sans">
 
       {/* Background Glow Effects - Subtle dark minimal */}
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-zinc-900/30 to-[#050505] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-gray-100/50 to-[#f8f9fa] pointer-events-none" />
 
       {/* Header */}
       <header className="px-8 py-6 w-full max-w-7xl mx-auto flex items-center justify-between relative z-10">
         <div className="flex items-center gap-3">
           {/* Logo mark */}
-          <div className="relative w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.15)]">
-            <Sparkles className="w-4 h-4 text-black" />
+          <div className="relative w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-200">
+            <Sparkles className="w-4 h-4 text-[#1a73e8]" />
           </div>
           {/* Wordmark */}
           <div className="flex items-baseline gap-1">
-            <span className="text-white font-extrabold tracking-tight text-xl leading-none">Bookia</span>
-            <span className="text-zinc-500 font-bold text-xs uppercase tracking-widest leading-none">AI</span>
+            <span className="text-[#202124] font-extrabold tracking-tight text-xl leading-none">Bookia</span>
+            <span className="text-[#5f6368] font-bold text-xs uppercase tracking-widest leading-none">AI</span>
           </div>
         </div>
         <button 
           onClick={openAdminModal}
-          className="text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-200 cursor-pointer"
+          className="text-sm font-medium text-[#5f6368] hover:text-[#202124] transition-colors duration-200 cursor-pointer"
         >
           Iniciar Sesión
         </button>
@@ -406,20 +406,20 @@ export default function App() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center justify-center gap-2.5 bg-zinc-900/80 border border-zinc-700/60 rounded-full px-4 py-2 mb-6 mx-auto"
+            className="inline-flex items-center justify-center gap-2.5 bg-white border border-[#dadce0] rounded-full px-4 py-2 mb-6 mx-auto"
           >
             <span className="flex items-center gap-1">
               {['#e879f9','#38bdf8','#fb923c'].map((c, i) => (
                 <span
                   key={i}
-                  className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-[#202124] flex-shrink-0"
                   style={{ backgroundColor: c }}
                 >
                   ✓
                 </span>
               ))}
             </span>
-            <span className="text-zinc-400 text-[11px] sm:text-xs font-semibold tracking-wide whitespace-nowrap">
+            <span className="text-[#5f6368] text-[11px] sm:text-xs font-semibold tracking-wide whitespace-nowrap">
               +47 negocios activos
             </span>
           </motion.div>
@@ -436,10 +436,10 @@ export default function App() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-base sm:text-lg md:text-xl text-zinc-400 font-medium mb-8 max-w-xl mx-auto leading-relaxed px-1"
+            className="text-base sm:text-lg md:text-xl text-[#5f6368] font-medium mb-8 max-w-xl mx-auto leading-relaxed px-1"
           >
-            Instalamos un <strong className="text-zinc-200">recepcionista con IA</strong> en tu negocio en 48h.
-            Atiende reservas por WhatsApp, Instagram o tu web —<strong className="text-zinc-200">sin que tú hagas nada.</strong>
+            Instalamos un <strong className="text-gray-900">recepcionista con IA</strong> en tu negocio en 48h.
+            Atiende reservas por WhatsApp, Instagram o tu web —<strong className="text-gray-900">sin que tú hagas nada.</strong>
           </motion.p>
 
           {/* CTAs */}
@@ -451,13 +451,13 @@ export default function App() {
           >
             <button
               onClick={() => openModal('Plan Ultra')}
-              className="w-full sm:w-auto bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] cursor-pointer text-base sm:text-[17px]"
+              className="w-full sm:w-auto bg-[#1a73e8] text-white font-bold px-8 py-4 rounded-full hover:bg-[#1b66c9] transition-all hover:scale-105 active:scale-95 shadow-[0_4px_14px_0_rgba(26,115,232,0.39)] cursor-pointer text-base sm:text-[17px]"
             >
               Quiero verlo en mi negocio →
             </button>
             <button
               onClick={() => document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="w-full sm:w-auto bg-transparent border border-zinc-700 text-zinc-300 font-semibold px-7 py-4 rounded-full hover:border-zinc-500 hover:text-white transition-all active:scale-95 cursor-pointer text-base"
+              className="w-full sm:w-auto bg-transparent border border-[#dadce0] text-gray-800 font-semibold px-7 py-4 rounded-full hover:border-zinc-500 hover:text-[#202124] transition-all active:scale-95 cursor-pointer text-base"
             >
               Ver demo en vivo ↓
             </button>
@@ -476,8 +476,8 @@ export default function App() {
               { value: '48h', label: 'para estar operativo' },
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-1.5">
-                <span className="text-white font-extrabold text-base sm:text-lg">{stat.value}</span>
-                <span className="text-zinc-500 text-xs sm:text-sm">{stat.label}</span>
+                <span className="text-[#202124] font-extrabold text-base sm:text-lg">{stat.value}</span>
+                <span className="text-[#5f6368] text-xs sm:text-sm">{stat.label}</span>
               </div>
             ))}
           </motion.div>
@@ -485,7 +485,7 @@ export default function App() {
 
         {/* Business Type Selector */}
         <div className="w-full max-w-5xl mb-8 sm:mb-12">
-          <p className="flex justify-center items-center gap-2 text-zinc-500 text-xs font-semibold uppercase tracking-widest text-center mb-4">
+          <p className="flex justify-center items-center gap-2 text-[#5f6368] text-xs font-semibold uppercase tracking-widest text-center mb-4">
             <Target className="w-3.5 h-3.5" /> Elige el tipo de negocio
           </p>
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
@@ -498,8 +498,8 @@ export default function App() {
                   onClick={() => resetDemo(biz.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-white text-black shadow-lg scale-105'
-                      : 'bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600'
+                      ? 'bg-[#1a73e8] text-white shadow-lg scale-105'
+                      : 'bg-white border border-[#dadce0] text-[#5f6368] hover:text-[#202124] hover:border-zinc-600'
                   }`}
                 >
                   <BizIcon className="w-4 h-4" />
@@ -522,38 +522,38 @@ export default function App() {
             className="flex justify-center lg:justify-end"
           >
             {/* Phone Frame */}
-            <div className="w-full max-w-[320px] sm:max-w-[360px] h-[610px] sm:h-[700px] bg-black rounded-[2.5rem] sm:rounded-[3rem] p-2 sm:p-2.5 shadow-2xl relative overflow-hidden border border-zinc-800">
+            <div className="w-full max-w-[320px] sm:max-w-[360px] h-[610px] sm:h-[700px] bg-white rounded-[2.5rem] sm:rounded-[3rem] p-2 sm:p-2.5 shadow-2xl relative overflow-hidden border border-[#dadce0]">
 
               {/* Phone Top Notch */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-6 sm:h-7 bg-black rounded-b-xl sm:rounded-b-2xl z-20 flex justify-center items-end pb-1 sm:pb-1.5 border-b border-l border-r border-zinc-800">
-                <div className="w-12 sm:w-16 h-1 sm:h-1.5 bg-zinc-800 rounded-full"></div>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-6 sm:h-7 bg-[#e8eaed] rounded-b-xl sm:rounded-b-2xl z-20 flex justify-center items-end pb-1 sm:pb-1.5 border-b border-l border-r border-[#dadce0]">
+                <div className="w-12 sm:w-16 h-1 sm:h-1.5 bg-gray-300 rounded-full"></div>
               </div>
 
               {/* Phone Screen */}
-              <div className="w-full h-full bg-zinc-900 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden flex flex-col relative chat-scroll">
+              <div className="w-full h-full bg-white rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden flex flex-col relative chat-scroll">
 
                 {/* Chat Header */}
-                <div className="bg-black/90 backdrop-blur-md px-4 py-5 pt-10 border-b border-zinc-800 flex flex-col items-center relative">
+                <div className="bg-white/90 backdrop-blur-md px-4 py-5 pt-10 border-b border-[#dadce0] flex flex-col items-center relative">
                   {currentStep > 0 && (
                     <button 
                       onClick={handleGoBack}
-                      className="absolute left-5 top-11 text-zinc-400 hover:text-white transition-colors flex items-center justify-center p-1 cursor-pointer active:scale-95"
+                      className="absolute left-5 top-11 text-[#5f6368] hover:text-[#202124] transition-colors flex items-center justify-center p-1 cursor-pointer active:scale-95"
                       title="Paso anterior"
                     >
                       <ArrowLeft className="w-5 h-5" />
                     </button>
                   )}
-                  <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center mb-2 shadow-sm">
-                    <Bot className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-full bg-[#f1f3f4] flex items-center justify-center mb-2 shadow-sm">
+                    <Bot className="w-6 h-6 text-[#202124]" />
                   </div>
-                  <h3 className="text-white font-semibold text-[15px]">{demoFlows[selectedBusiness].agentName}</h3>
+                  <h3 className="text-[#202124] font-semibold text-[15px]">{demoFlows[selectedBusiness].agentName}</h3>
                   <div className="flex items-center gap-1.5 mt-1">
                     <motion.span
                       animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
                       transition={{ repeat: Infinity, duration: 2 }}
                       className="w-1.5 h-1.5 rounded-full bg-green-400"
                     />
-                    <span className="text-xs text-zinc-400 font-medium">En línea ahora</span>
+                    <span className="text-xs text-[#5f6368] font-medium">En línea ahora</span>
                   </div>
                 </div>
 
@@ -570,8 +570,8 @@ export default function App() {
                         <div className={`
                           max-w-[85%] p-3.5 rounded-2xl text-[14px] leading-relaxed shadow-sm whitespace-pre-line
                           ${msg.role === 'user'
-                            ? 'bg-white text-black rounded-tr-sm'
-                            : 'bg-zinc-800 text-white border border-zinc-700/50 rounded-tl-sm'}
+                            ? 'bg-[#1a73e8] text-white rounded-tr-sm'
+                            : 'bg-[#f1f3f4] text-[#202124] border border-[#dadce0] rounded-tl-sm'}
                         `}>
                           {msg.text}
                           {msg.role === 'bot' && isFlowComplete && idx === chatHistory.length - 1 && (
@@ -593,16 +593,16 @@ export default function App() {
                 </div>
 
                 {/* Gradient overlay */}
-                <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-zinc-900 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
                 {/* Options Area */}
-                <div className="absolute bottom-0 left-0 w-full p-4 pb-8 bg-black/90 backdrop-blur-xl border-t border-zinc-800 z-10">
+                <div className="absolute bottom-0 left-0 w-full p-4 pb-8 bg-white/90 backdrop-blur-xl border-t border-[#dadce0] z-10">
                   <AnimatePresence mode="wait">
                     {isFlowComplete ? (
                       <motion.div key="complete" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2 items-center">
                         <button
                           onClick={() => resetDemo()}
-                          className="text-zinc-500 hover:text-white font-medium text-sm py-2.5 px-6 rounded-full border border-zinc-800 hover:bg-zinc-900 transition-all cursor-pointer"
+                          className="text-[#5f6368] hover:text-[#202124] font-medium text-sm py-2.5 px-6 rounded-full border border-[#dadce0] hover:bg-white transition-all cursor-pointer"
                         >
                           ↩ Reiniciar Demo
                         </button>
@@ -619,7 +619,7 @@ export default function App() {
                           <button
                             key={i}
                             onClick={() => handleOptionClick(opt)}
-                            className="bg-zinc-900 hover:bg-zinc-700 text-white font-medium text-xs py-2 px-4 rounded-full border border-zinc-700 shadow-sm transition-all active:scale-95 cursor-pointer"
+                            className="bg-white hover:bg-[#e8eaed] text-[#202124] font-medium text-xs py-2 px-4 rounded-full border border-[#dadce0] shadow-sm transition-all active:scale-95 cursor-pointer"
                           >
                             {opt}
                           </button>
@@ -647,8 +647,8 @@ export default function App() {
 
               {/* Step counter */}
               <div className="flex items-center gap-3 mb-6">
-                <div className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
-                  <span className="text-zinc-400 text-xs font-bold uppercase tracking-wider">
+                <div className="px-3 py-1 bg-white border border-[#dadce0] rounded-full">
+                  <span className="text-[#5f6368] text-xs font-bold uppercase tracking-wider">
                     {isFlowComplete ? '✅ Demo completada' : `Paso ${currentStep + 1} de ${currentFlowLength}`}
                   </span>
                 </div>
@@ -662,15 +662,15 @@ export default function App() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.35 }}
-                  className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 p-8 rounded-3xl relative overflow-hidden mb-6"
+                  className="bg-white backdrop-blur-md border border-[#dadce0] p-8 rounded-3xl relative overflow-hidden mb-6"
                 >
                   <div className="flex items-start gap-4">
                     <div className="shrink-0 mt-1">
-                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <CheckCircle2 className="w-5 h-5 text-black" />
+                      <div className="w-8 h-8 rounded-full bg-[#1e8e3e] flex items-center justify-center">
+                        <CheckCircle2 className="w-5 h-5 text-white" />
                       </div>
                     </div>
-                    <p className="text-zinc-200 text-[17px] leading-relaxed font-medium">
+                    <p className="text-gray-900 text-[17px] leading-relaxed font-medium">
                       {isFlowComplete
                         ? '🎉 ¡Conversación completada! El cliente tiene su cita confirmada y tú no has hecho absolutamente nada.'
                         : currentBenefit}
@@ -679,14 +679,14 @@ export default function App() {
 
                   {/* Progress bar */}
                   <div className="mt-7">
-                    <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-1 bg-[#f1f3f4] rounded-full overflow-hidden">
                       <motion.div
                         className="h-full bg-white rounded-full"
                         animate={{ width: `${((currentStep + (isFlowComplete ? 1 : 0)) / currentFlowLength) * 100}%` }}
                         transition={{ duration: 0.5 }}
                       />
                     </div>
-                    <p className="text-zinc-600 text-xs mt-2">
+                    <p className="text-gray-400 text-xs mt-2">
                       {Math.round(((currentStep + (isFlowComplete ? 1 : 0)) / currentFlowLength) * 100)}% del flujo completado
                     </p>
                   </div>
@@ -698,11 +698,11 @@ export default function App() {
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                   <button
                     onClick={() => openModal('Plan Ultra')}
-                    className="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 cursor-pointer text-[15px] mb-3"
+                    className="w-full bg-[#1a73e8] text-white font-bold py-4 rounded-2xl hover:bg-[#1b66c9] transition-all hover:scale-105 active:scale-95 cursor-pointer text-[15px] mb-3"
                   >
                     Quiero esto para mi negocio →
                   </button>
-                  <p className="text-zinc-600 text-xs text-center">Sin permanencia · Activo en 48h · Soporte incluido</p>
+                  <p className="text-gray-400 text-xs text-center">Sin permanencia · Activo en 48h · Soporte incluido</p>
                 </motion.div>
               )}
 
@@ -720,8 +720,8 @@ export default function App() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <p className="text-zinc-500 text-sm font-semibold uppercase tracking-widest mb-3">Lo que dicen nuestros clientes</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Resultados reales en negocios reales</h2>
+            <p className="text-[#5f6368] text-sm font-semibold uppercase tracking-widest mb-3">Lo que dicen nuestros clientes</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#202124]">Resultados reales en negocios reales</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -751,13 +751,13 @@ export default function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-7 flex flex-col gap-5"
+                className="bg-white border border-[#dadce0] rounded-3xl p-7 flex flex-col gap-5"
               >
-                <span className="inline-block self-start bg-zinc-800/80 text-zinc-300 text-xs font-bold px-3 py-1 rounded-full">{t.metric}</span>
-                <p className="text-zinc-300 leading-relaxed text-[15px] flex-1">&ldquo;{t.quote}&rdquo;</p>
+                <span className="inline-block self-start bg-[#f1f3f4] text-gray-800 text-xs font-bold px-3 py-1 rounded-full">{t.metric}</span>
+                <p className="text-gray-800 leading-relaxed text-[15px] flex-1">&ldquo;{t.quote}&rdquo;</p>
                 <div>
-                  <p className="text-white font-semibold text-sm">{t.author}</p>
-                  <p className="text-zinc-500 text-xs">{t.role}</p>
+                  <p className="text-[#202124] font-semibold text-sm">{t.author}</p>
+                  <p className="text-[#5f6368] text-xs">{t.role}</p>
                 </div>
               </motion.div>
             ))}
@@ -767,9 +767,9 @@ export default function App() {
         {/* Services Section - CRO Optimized */}
         <section className="w-full max-w-6xl mt-16 mb-16 px-4">
           <div className="text-center mb-14">
-            <p className="text-zinc-500 text-sm font-semibold uppercase tracking-widest mb-3">Elige tu solución</p>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">Sin contratos. Sin complicaciones.</h2>
-            <p className="text-zinc-400 text-lg">Empieza por el canal que ya usan tus clientes. Escala cuando quieras.</p>
+            <p className="text-[#5f6368] text-sm font-semibold uppercase tracking-widest mb-3">Elige tu solución</p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#202124]">Sin contratos. Sin complicaciones.</h2>
+            <p className="text-[#5f6368] text-lg">Empieza por el canal que ya usan tus clientes. Escala cuando quieras.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -777,51 +777,51 @@ export default function App() {
             {/* Card 1 — Plan Standard */}
             <BentoCard
               onClick={() => openModal('Plan Standard')}
-              className="p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 flex flex-col group"
+              className="p-8 rounded-3xl bg-white border border-[#dadce0] flex flex-col group"
             >
-              <MessageSquare className="w-7 h-7 text-zinc-400 mb-5 group-hover:text-white transition-colors duration-300" />
-              <h3 className="text-lg font-bold mb-2 text-white">Plan Standard</h3>
+              <MessageSquare className="w-7 h-7 text-[#5f6368] mb-5 group-hover:text-[#202124] transition-colors duration-300" />
+              <h3 className="text-lg font-bold mb-2 text-[#202124]">Plan Standard</h3>
               <div className="mb-4">
-                <span className="text-3xl font-black text-white">79€</span>
-                <span className="text-zinc-500 text-base font-medium">/mes</span>
-                <p className="text-xs text-zinc-500 mt-1">+299€ setup único</p>
+                <span className="text-3xl font-black text-[#202124]">79€</span>
+                <span className="text-[#5f6368] text-base font-medium">/mes</span>
+                <p className="text-xs text-[#5f6368] mt-1">+299€ setup único</p>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">
+              <p className="text-[#5f6368] text-sm leading-relaxed mb-6 flex-1">
                 Ideal para empezar a automatizar.
                 <br /><br />
-                • <strong className="text-zinc-300">1 Canal a elegir</strong> (WhatsApp, IG o Web)<br />
+                • <strong className="text-gray-800">1 Canal a elegir</strong> (WhatsApp, IG o Web)<br />
                 • Respuestas 24/7 instantáneas<br />
                 • IA entrenada con tu menú e info<br />
                 • Hasta 300 interacciones/mes
               </p>
-              <span className="text-xs font-semibold text-zinc-500 group-hover:text-white transition-colors mt-auto">Seleccionar Standard →</span>
+              <span className="text-xs font-semibold text-[#5f6368] group-hover:text-[#202124] transition-colors mt-auto">Seleccionar Standard →</span>
             </BentoCard>
 
             {/* Card 2 — Plan Pro */}
             <BentoCard
               onClick={() => openModal('Plan Pro')}
-              className="p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/80 flex flex-col group relative overflow-hidden"
+              className="p-8 rounded-3xl bg-white border border-[#dadce0] flex flex-col group relative overflow-hidden"
             >
               {/* Badge */}
-              <div className="absolute top-0 right-0 bg-zinc-800 text-zinc-300 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
+              <div className="absolute top-0 right-0 bg-[#f1f3f4] text-gray-800 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
                 Más Popular
               </div>
-              <Share2 className="w-7 h-7 text-zinc-400 mb-5 group-hover:text-white transition-colors duration-300" />
-              <h3 className="text-lg font-bold mb-2 text-white">Plan Pro</h3>
+              <Share2 className="w-7 h-7 text-[#5f6368] mb-5 group-hover:text-[#202124] transition-colors duration-300" />
+              <h3 className="text-lg font-bold mb-2 text-[#202124]">Plan Pro</h3>
               <div className="mb-4">
-                <span className="text-3xl font-black text-white">149€</span>
-                <span className="text-zinc-500 text-base font-medium">/mes</span>
-                <p className="text-xs text-zinc-500 mt-1">+499€ setup único</p>
+                <span className="text-3xl font-black text-[#202124]">149€</span>
+                <span className="text-[#5f6368] text-base font-medium">/mes</span>
+                <p className="text-xs text-[#5f6368] mt-1">+499€ setup único</p>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 flex-1">
+              <p className="text-[#5f6368] text-sm leading-relaxed mb-6 flex-1">
                 Escala tus reservas al máximo nivel.
                 <br /><br />
-                • <strong className="text-zinc-300">2 Canales combinados</strong><br />
+                • <strong className="text-gray-800">2 Canales combinados</strong><br />
                 • Integración con Calendar y CRM<br />
                 • Pagos embebidos (señal/fianza)<br />
                 • Interacciones ilimitadas
               </p>
-              <span className="text-xs font-semibold text-zinc-500 group-hover:text-white transition-colors mt-auto">Seleccionar Pro →</span>
+              <span className="text-xs font-semibold text-[#5f6368] group-hover:text-[#202124] transition-colors mt-auto">Seleccionar Pro →</span>
             </BentoCard>
 
             {/* Card 3 — Plan Ultra */}
@@ -833,33 +833,33 @@ export default function App() {
               <div className="pack-full-inner" />
 
               {/* Badge flotante */}
-              <div className="absolute -top-3 left-8 z-10 px-4 py-1 bg-white text-black text-xs font-bold rounded-full uppercase tracking-widest shadow-lg">
+              <div className="absolute -top-3 left-8 z-10 px-4 py-1 bg-[#1a73e8] text-white text-xs font-bold rounded-full uppercase tracking-widest shadow-lg">
                 Experiencia Total
               </div>
 
               {/* Contenido */}
               <div className="relative z-10 p-8 flex flex-col justify-between h-full">
                 <div>
-                  <Sparkles className="w-7 h-7 text-white mb-5" />
-                  <h3 className="text-xl font-bold mb-2 text-white">Plan Ultra</h3>
+                  <Sparkles className="w-7 h-7 text-[#202124] mb-5" />
+                  <h3 className="text-xl font-bold mb-2 text-[#202124]">Plan Ultra</h3>
                   <div className="mb-6 flex flex-col items-baseline gap-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-black text-white">249€</span>
-                      <span className="text-zinc-400 font-medium tracking-wide">/mes</span>
+                      <span className="text-4xl font-black text-[#202124]">249€</span>
+                      <span className="text-[#5f6368] font-medium tracking-wide">/mes</span>
                     </div>
-                    <span className="bg-zinc-800 text-zinc-300 text-xs font-bold px-3 py-1 rounded-full mt-2">+799€ setup único</span>
+                    <span className="bg-[#f1f3f4] text-gray-800 text-xs font-bold px-3 py-1 rounded-full mt-2">+799€ setup único</span>
                   </div>
-                  <p className="text-zinc-400 text-[14px] leading-relaxed mb-8 flex-1">
+                  <p className="text-[#5f6368] text-[14px] leading-relaxed mb-8 flex-1">
                     Tu sistema omnicanal revolucionario.
                     <br /><br />
-                    • <strong className="text-white">Todos los Canales</strong> (WA + IG + Web)<br />
+                    • <strong className="text-[#202124]">Todos los Canales</strong> (WA + IG + Web)<br />
                     • Rediseño web premium<br />
                     • Soporte prioritario 1-to-1<br />
                     • Reportes de conversión IA
                   </p>
                 </div>
                 <div>
-                  <span className="inline-flex w-full justify-center items-center gap-2 bg-white text-black text-[14px] font-bold px-4 py-3 rounded-xl group-hover:bg-zinc-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.25)] relative overflow-hidden">
+                  <span className="inline-flex w-full justify-center items-center gap-2 bg-[#1a73e8] text-white text-[14px] font-bold px-4 py-3 rounded-xl group-hover:bg-[#1b66c9] transition-all shadow-md border border-gray-200 relative overflow-hidden">
                     Quiero el Plan Ultra →
                   </span>
                 </div>
@@ -874,15 +874,15 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mt-16 bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6"
+            className="mt-16 bg-white border border-[#dadce0] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6"
           >
             <div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">¿Tienes dudas? Cuéntanos tu caso.</h3>
-              <p className="text-zinc-400">Sin compromiso. En menos de 24h te decimos exactamente qué solución encaja con tu negocio.</p>
+              <h3 className="text-2xl md:text-3xl font-bold text-[#202124] mb-2">¿Tienes dudas? Cuéntanos tu caso.</h3>
+              <p className="text-[#5f6368]">Sin compromiso. En menos de 24h te decimos exactamente qué solución encaja con tu negocio.</p>
             </div>
             <button
               onClick={() => openModal('Consulta sin compromiso')}
-              className="shrink-0 bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-zinc-100 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap"
+              className="shrink-0 bg-[#1a73e8] text-white font-bold px-8 py-4 rounded-full hover:bg-[#1b66c9] transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap"
             >
               Hablar con un experto →
             </button>
@@ -898,17 +898,17 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-white/80 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 w-full max-w-3xl relative shadow-2xl max-h-[80vh] flex flex-col"
+              className="bg-white border border-[#dadce0] rounded-3xl p-6 sm:p-8 w-full max-w-3xl relative shadow-2xl max-h-[80vh] flex flex-col"
             >
               <button 
                 onClick={closeAdminModal}
-                className="absolute top-5 right-5 text-zinc-400 hover:text-white transition-colors cursor-pointer z-10"
+                className="absolute top-5 right-5 text-[#5f6368] hover:text-[#202124] transition-colors cursor-pointer z-10"
                 aria-label="Cerrar panel"
               >
                 <X className="w-6 h-6" />
@@ -916,11 +916,11 @@ export default function App() {
 
               {!isAuthenticatedAdmin ? (
                 <div className="flex flex-col items-center justify-center py-8 px-4">
-                  <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-6">
-                    <Lock className="w-8 h-8 text-zinc-400" />
+                  <div className="w-16 h-16 bg-[#f1f3f4] rounded-full flex items-center justify-center mb-6">
+                    <Lock className="w-8 h-8 text-[#5f6368]" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Acceso Restringido</h3>
-                  <p className="text-zinc-400 mb-8 text-center text-sm">
+                  <h3 className="text-2xl font-bold text-[#202124] mb-2">Acceso Restringido</h3>
+                  <p className="text-[#5f6368] mb-8 text-center text-sm">
                     Introduce tu código de seguridad.
                   </p>
                   
@@ -934,7 +934,7 @@ export default function App() {
                       }}
                       disabled={lockoutTimeLeft > 0}
                       placeholder="••••"
-                      className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-center text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all mb-4 tracking-[0.5em] font-mono text-xl disabled:opacity-50"
+                      className="w-full bg-white border border-[#dadce0] rounded-xl px-4 py-3 text-center text-[#202124] placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all mb-4 tracking-[0.5em] font-mono text-xl disabled:opacity-50"
                       autoFocus
                     />
                     {lockoutTimeLeft > 0 ? (
@@ -950,7 +950,7 @@ export default function App() {
                     <button 
                       type="submit"
                       disabled={lockoutTimeLeft > 0}
-                      className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-[#1a73e8] text-white font-bold py-3 rounded-xl hover:bg-[#1b66c9] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Autenticar
                     </button>
@@ -958,22 +958,22 @@ export default function App() {
                 </div>
               ) : (
                 <>
-                  <h3 className="text-2xl font-bold text-white mb-2">Panel de Leads</h3>
-                  <p className="text-zinc-400 mb-6 text-sm flex items-center gap-2">
+                  <h3 className="text-2xl font-bold text-[#202124] mb-2">Panel de Leads</h3>
+                  <p className="text-[#5f6368] mb-6 text-sm flex items-center gap-2">
                     <Database className="w-4 h-4" />
                     Correos capturados en la landing page.
                   </p>
 
                   <div className="flex-1 overflow-y-auto pr-2 chat-scroll">
                 {leadsData.length === 0 ? (
-                  <div className="text-center py-12 text-zinc-500">
+                  <div className="text-center py-12 text-[#5f6368]">
                     No hay leads capturados todavía.
                   </div>
                 ) : (
                   <div className="w-full text-left overflow-x-auto">
                     <table className="w-full border-collapse min-w-[500px]">
                       <thead>
-                        <tr className="border-b border-zinc-800 text-zinc-400 text-sm">
+                        <tr className="border-b border-[#dadce0] text-[#5f6368] text-sm">
                           <th className="pb-3 pr-4 font-medium text-left">Email</th>
                           <th className="pb-3 pr-4 font-medium text-left">Servicio de interés</th>
                           <th className="pb-3 font-medium text-left">Fecha</th>
@@ -981,12 +981,12 @@ export default function App() {
                       </thead>
                       <tbody>
                         {leadsData.map((lead, i) => (
-                          <tr key={i} className="border-b border-zinc-800/50 text-zinc-300 text-sm hover:bg-zinc-800/20 transition-colors">
-                            <td className="py-4 pr-4 font-medium text-white whitespace-nowrap">{lead.email}</td>
+                          <tr key={i} className="border-b border-[#dadce0] text-gray-800 text-sm hover:bg-[#f1f3f4] transition-colors">
+                            <td className="py-4 pr-4 font-medium text-[#202124] whitespace-nowrap">{lead.email}</td>
                             <td className="py-4 pr-4">
-                              <span className="bg-zinc-800 px-3 py-1 rounded-full text-xs whitespace-nowrap">{lead.service}</span>
+                              <span className="bg-[#f1f3f4] px-3 py-1 rounded-full text-xs whitespace-nowrap">{lead.service}</span>
                             </td>
-                            <td className="py-4 text-zinc-500 whitespace-nowrap">{lead.date}</td>
+                            <td className="py-4 text-[#5f6368] whitespace-nowrap">{lead.date}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1008,17 +1008,17 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-white/80 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 w-full max-w-md relative shadow-2xl"
+              className="bg-white border border-[#dadce0] rounded-3xl p-6 sm:p-8 w-full max-w-md relative shadow-2xl"
             >
               <button 
                 onClick={closeModal}
-                className="absolute top-5 right-5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="absolute top-5 right-5 text-[#5f6368] hover:text-[#202124] transition-colors cursor-pointer"
                 aria-label="Cerrar modal"
               >
                 <X className="w-6 h-6" />
@@ -1026,22 +1026,22 @@ export default function App() {
 
               {!isSubmitted ? (
                 <>
-                  <h3 className="text-2xl font-bold text-white mb-2">
+                  <h3 className="text-2xl font-bold text-[#202124] mb-2">
                     {selectedService !== 'Consulta sin compromiso' && selectedService 
                       ? `Solicitas el ${selectedService}` 
                       : 'Solicita información'}
                   </h3>
-                  <p className="text-zinc-400 mb-6 text-sm">Déjanos tu email y te enviaremos todos los detalles sin compromiso.</p>
+                  <p className="text-[#5f6368] mb-6 text-sm">Déjanos tu email y te enviaremos todos los detalles sin compromiso.</p>
 
                   <form onSubmit={handleFormSubmit} className="space-y-5">
                     <div>
-                      <label htmlFor="service" className="block text-sm font-medium text-zinc-300 mb-1.5">Plan de interés</label>
+                      <label htmlFor="service" className="block text-sm font-medium text-gray-800 mb-1.5">Plan de interés</label>
                       <div className="relative">
                         <select 
                           id="service" 
                           value={selectedService}
                           onChange={(e) => setSelectedService(e.target.value)}
-                          className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all cursor-pointer appearance-none"
+                          className="w-full bg-white border border-[#dadce0] rounded-xl px-4 py-3.5 text-[#202124] focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all cursor-pointer appearance-none"
                           style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
                           <option value="Plan Standard">Plan Standard (79€/mes)</option>
@@ -1049,14 +1049,14 @@ export default function App() {
                           <option value="Plan Ultra">Plan Ultra (249€/mes)</option>
                           <option value="Consulta sin compromiso">Consulta sin compromiso</option>
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#5f6368]">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">Correo electrónico</label>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-800 mb-1.5">Correo electrónico</label>
                       <input 
                         type="email" 
                         id="email" 
@@ -1064,13 +1064,13 @@ export default function App() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="tu@email.com"
-                        className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all"
+                        className="w-full bg-white border border-[#dadce0] rounded-xl px-4 py-3.5 text-[#202124] placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all"
                       />
                     </div>
 
                     <button 
                       type="submit"
-                      className="w-full mt-2 bg-white text-black font-bold text-[15px] py-3.5 rounded-xl hover:bg-zinc-200 transition-colors cursor-pointer"
+                      className="w-full mt-2 bg-[#1a73e8] text-white font-bold text-[15px] py-3.5 rounded-xl hover:bg-[#1b66c9] transition-colors cursor-pointer"
                     >
                       Solicitar información
                     </button>
@@ -1085,8 +1085,8 @@ export default function App() {
                   <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-5">
                     <CheckCircle2 className="w-8 h-8 text-green-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">¡Gracias!</h3>
-                  <p className="text-zinc-400">Te enviaremos la información a tu correo en breve.</p>
+                  <h3 className="text-xl font-bold text-[#202124] mb-2">¡Gracias!</h3>
+                  <p className="text-[#5f6368]">Te enviaremos la información a tu correo en breve.</p>
                 </motion.div>
               )}
             </motion.div>
